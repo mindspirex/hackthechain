@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import axios from "axios";
 import { UserIcon, KeyIcon, ChevronDownIcon } from "lucide-react";
 import background from "@/components/bg.jpeg";
 
@@ -10,30 +11,18 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  async function handleLogin(e: any) {
+  async function handleLogin(e) {
     e.preventDefault();
     const apiEndpoint =
       role === "student"
-        ? process.env.SERVER + "/api/login/student"
-        : process.env.SERVER + "/api/login/teacher";
+        ? `${process.env.SERVER}/api/login/student`
+        : `${process.env.SERVER}/api/login/teacher`;
 
     try {
-      const response = await fetch(apiEndpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem("token", data.token);
-        window.location.href =
-          role === "student" ? "/student-dashboard" : "/teacher-dashboard";
-      } else {
-        alert("Invalid Credentials");
-      }
+      const response = await axios.post(apiEndpoint, { email, password });
+      localStorage.setItem("token", response.data.token);
+      window.location.href =
+        role === "student" ? "/student-dashboard" : "/teacher-dashboard";
     } catch (error) {
       console.error(error);
       alert("Incorrect Credentials");
@@ -42,7 +31,7 @@ export default function LoginPage() {
 
   return (
     <div className="bg-gradient-to-b from-[#d4d6ea] to-[#b1b5c6]">
-      <div className="flex min-h-screen p-12 rounded-3xl bg-">
+      <div className="flex min-h-screen p-12 rounded-3xl">
         <div className="w-1/2 flex items-center justify-center bg-white rounded-lg shadow-2xl">
           <div className="p-10 rounded-3xl shadow-2xl w-96 space-y-6 border border-gray-200">
             <div className="text-center">
